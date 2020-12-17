@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import CoreData
 
 class PopupAddNote: UIView {
     
@@ -57,6 +58,18 @@ class PopupAddNote: UIView {
             ViewController.waitingFlag = true
             self.removeFromSuperview()
             return
+        }
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        let managedContext = appDelegate.persistentContainer.viewContext
+        let entity = NSEntityDescription.entity(forEntityName: "Notes", in: managedContext)!
+        let note = NSManagedObject(entity: entity, insertInto: managedContext)
+        note.setValue(string, forKey: "name")
+        note.setValue("", forKey: "desc")
+        note.setValue(NSDate(), forKey: "date")
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
         }
         ViewController.arrayOfNotes.append(Note(name: string, time: NSDate(), description: ""))
         ViewController.waitingFlag = true

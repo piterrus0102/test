@@ -17,7 +17,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var customTableViewHeight: NSLayoutConstraint!
     
     static var arrayOfNotes = [Note]()
-    var notesManagedObject: [NSManagedObject] = []
+    static var notesManagedObject: [NSManagedObject] = []
     
     var numberOfRows = 0
     var waitingTimer: Timer!
@@ -33,15 +33,15 @@ class ViewController: UIViewController {
         let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "Notes")
         
         do {
-            notesManagedObject = try managedContext.fetch(fetchRequest)
+            ViewController.notesManagedObject = try managedContext.fetch(fetchRequest)
         } catch let error as NSError {
             print("Could not fetch \(error), \(error.userInfo)")
         }
         
-        for i in notesManagedObject.indices {
-            let name = notesManagedObject[i].value(forKey: "name") as! String
-            let description = notesManagedObject[i].value(forKey: "desc") as! String
-            let date = notesManagedObject[i].value(forKey: "date") as! Date
+        for i in ViewController.notesManagedObject.indices {
+            let name = ViewController.notesManagedObject[i].value(forKey: "name") as! String
+            let description = ViewController.notesManagedObject[i].value(forKey: "desc") as! String
+            let date = ViewController.notesManagedObject[i].value(forKey: "date") as! Date
             let note = Note(name: name, time: date as NSDate, description: description)
             ViewController.arrayOfNotes.append(note)
         }
@@ -118,7 +118,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             numberOfRows = ViewController.arrayOfNotes.count
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             let managedContext = appDelegate.persistentContainer.viewContext
-            managedContext.delete(notesManagedObject[indexPath.row])
+            managedContext.delete(ViewController.notesManagedObject[indexPath.row])
             do {
                 try managedContext.save()
             } catch let error as NSError {
